@@ -2,6 +2,7 @@
 configs/talosconfig
 configs/controlplane.yaml
 configs/worker.yaml
+configs/secrets.yaml
 
 # Kubernetes config
 *.kubeconfig

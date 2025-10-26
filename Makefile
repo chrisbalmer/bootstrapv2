@@ -8,6 +8,7 @@ CLUSTER_ENDPOINT := https://$(NODE_IP):6443
 help:
 	@echo "Available targets:"
 	@echo "  generate-config  - Generate initial Talos configuration"
+	@echo "  pull-secrets     - Pull secrets from 1Password"
 	@echo "  apply-config     - Apply configuration to the node"
 	@echo "  bootstrap        - Bootstrap the Kubernetes cluster (run once)"
 	@echo "  kubeconfig       - Get and merge kubeconfig"
@@ -17,13 +18,20 @@ help:
 	@echo "  reset            - Reset the node (WARNING: destructive)"
 	@echo "  clean            - Remove generated configuration files"
 
-generate-config:
+pull-secrets:
+	@echo "Pulling secrets from 1Password..."
+	@mkdir -p configs
+	@op document get "bootstrapv2-talos-secrets" --vault "homelab" --output configs/secrets.yaml
+	@echo "Secrets retrieved successfully"
+
+generate-config: pull-secrets
 	@echo "Generating Talos configuration..."
 	@mkdir -p configs
 	talosctl gen config $(CLUSTER_NAME) $(CLUSTER_ENDPOINT) \
 		--output configs/ \
 		--with-docs=false \
 		--with-examples=false \
+		--with-secrets configs/secrets.yaml \
 		--config-patch @scripts/patch.yaml
 	@echo "Configuration generated in configs/"
 	@echo "Review and customize configs/controlplane.yaml if needed"

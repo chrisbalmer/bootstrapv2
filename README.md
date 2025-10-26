@@ -69,13 +69,39 @@ The node is configured with:
 
 ## Common Operations
 
+### Generate Secrets (First Time Setup)
+
+⚠️ **Warning**: Only do this once when setting up a new cluster! Regenerating secrets will make your existing cluster inaccessible.
+
+```bash
+# Generate new secrets for Talos version 1.11.3
+talosctl gen secrets --output-file configs/secrets.yaml --talos-version v1.11.3
+
+# Store in 1Password
+op document create configs/secrets.yaml --title "bootstrapv2-talos-secrets" --vault "homelab"
+```
+
+**Important Notes:**
+- These secrets contain the cryptographic keys for your cluster
+- **Never regenerate secrets for an existing cluster** - you will lose access to all nodes and data
+- The secrets are automatically pulled from 1Password when running `make generate-config`
+- If you need to regenerate for a fresh cluster installation, delete the old secrets from 1Password first
+
+### Pull Secrets from 1Password
+
+```bash
+make pull-secrets
+```
+
+This retrieves the stored secrets from 1Password. This happens automatically when running `make generate-config`.
+
 ### Generate Configuration
 
 ```bash
 make generate-config
 ```
 
-This generates the initial Talos configuration files.
+This generates the Talos configuration files using the secrets stored in 1Password. The secrets ensure consistency across configuration regenerations.
 
 ### Apply Configuration
 
