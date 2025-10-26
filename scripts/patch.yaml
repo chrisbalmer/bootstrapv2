@@ -1,0 +1,36 @@
+machine:
+  network:
+    hostname: bootstrapv2
+    interfaces:
+      - interface: eth0
+        addresses:
+          - 172.21.7.100/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 172.21.7.1
+    nameservers:
+      - 1.1.1.1
+      - 8.8.8.8
+  install:
+    disk: /dev/mmcblk0
+    image: ghcr.io/siderolabs/installer:v1.8.0
+    wipe: false
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.31.1
+    extraArgs:
+      rotate-server-certificates: true
+
+cluster:
+  allowSchedulingOnControlPlanes: true
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true
+  discovery:
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: false
+      service:
+        disabled: false

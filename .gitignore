@@ -1,0 +1,21 @@
+# Talos configuration files (may contain secrets)
+configs/talosconfig
+configs/controlplane.yaml
+configs/worker.yaml
+
+# Kubernetes config
+*.kubeconfig
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+.DS_Store
+
+# Secrets
+secrets/
+*.key
+*.crt
+*.pem
