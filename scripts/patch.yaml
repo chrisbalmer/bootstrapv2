@@ -2,15 +2,15 @@ machine:
   network:
     hostname: bootstrapv2
     interfaces:
-      - interface: eth0
+      - interface: end0
         addresses:
           - 172.21.7.100/24
         routes:
           - network: 0.0.0.0/0
             gateway: 172.21.7.1
     nameservers:
-      - 1.1.1.1
-      - 8.8.8.8
+      - 1.1.1.3
+      - 1.0.0.3
   install:
     disk: /dev/mmcblk0
     image: ghcr.io/siderolabs/installer:v1.8.0
@@ -24,7 +24,9 @@ cluster:
   allowSchedulingOnControlPlanes: true
   network:
     cni:
-      name: none
+      name: custom
+      urls:
+        - https://github.com/antrea-io/antrea/releases/download/v2.4.3/antrea-crds.yml
   proxy:
     disabled: true
   discovery:
