@@ -19,7 +19,7 @@ curl -LO https://github.com/siderolabs/talos/releases/download/v1.8.0/metal-arm6
 
 ### 2. Flash the Image
 
-#### Using Raspberry Pi Imager:
+#### Using Raspberry Pi Imager
 
 1. Open Raspberry Pi Imager
 2. Choose "Use custom" for OS
@@ -27,7 +27,7 @@ curl -LO https://github.com/siderolabs/talos/releases/download/v1.8.0/metal-arm6
 4. Select your microSD card
 5. Click "Write"
 
-#### Using dd (macOS/Linux):
+#### Using dd (macOS/Linux)
 
 ```bash
 # Extract the image

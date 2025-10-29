@@ -41,40 +41,47 @@ brew install yq
 ## Quick Start
 
 1. **Generate initial configuration**:
+
    ```bash
    make generate-config
    ```
 
 2. **Apply configuration to the node**:
+
    ```bash
    make apply-config
    ```
 
 3. **Bootstrap Kubernetes**:
+
    ```bash
    make bootstrap
    ```
 
 4. **Get kubeconfig**:
+
    ```bash
    make kubeconfig
    ```
 
 5. **(Optional) Install ArgoCD**:
+
    ```bash
    make bootstrap-argocd
    ```
 
 6. **Deploy Root Application (GitOps)**:
+
    ```bash
    make bootstrap-apps
    ```
-   
+
    This enables ArgoCD to:
+
    - Monitor this repository for new applications
    - Automatically sync changes from git
    - Deploy any new apps added to the `apps/` directory
-   
+
    See [apps/README.md](apps/README.md) and [bootstrap/argocd/README.md](bootstrap/argocd/README.md) for details.
 
 ## Configuration Parameters
@@ -103,7 +110,7 @@ make status NODE_IP=172.21.7.101
 
 ## Directory Structure
 
-```
+```text
 .
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
@@ -121,9 +128,12 @@ make status NODE_IP=172.21.7.101
 │   ├── controlplane.yaml    # Control plane configuration
 │   ├── talosconfig          # Talos client configuration
 │   └── secrets.yaml         # Talos secrets (from 1Password)
+├── docs/                     # Documentation
+│   ├── GITOPS.md            # GitOps workflow guide
+│   ├── QUICKSTART.md        # Quick reference for adding apps
+│   └── INSTALL.md           # Talos installation guide
 └── scripts/                  # Helper scripts
     ├── patch.yaml           # Configuration patches
-    ├── install-talos.md     # Installation guide
     ├── upgrade-talos.sh     # Upgrade helper script
     └── backup-config.sh     # Backup helper script
 ```
@@ -131,6 +141,7 @@ make status NODE_IP=172.21.7.101
 ## Configuration
 
 The node is configured with:
+
 - Hostname: `bootstrapv2`
 - IP Address: `172.21.7.100/24` (configurable via `NODE_IP` parameter)
 - Single control plane node (no workers)
@@ -156,6 +167,7 @@ op document create configs/secrets.yaml --title "bootstrapv2-talos-secrets" --va
 ```
 
 **Important Notes:**
+
 - These secrets contain the cryptographic keys for your cluster
 - **Never regenerate secrets for an existing cluster** - you will lose access to all nodes and data
 - The secrets are automatically pulled from 1Password when running `make generate-config`
@@ -258,6 +270,7 @@ talosctl --nodes 172.21.7.100 dashboard
 ## Network Configuration
 
 The node uses static IP configuration:
+
 - IP: 172.21.7.100/24
 - Gateway: 172.21.7.1 (adjust in patch.yaml if different)
 - DNS: 1.1.1.3, 1.0.0.3 (Cloudflare family-friendly)
