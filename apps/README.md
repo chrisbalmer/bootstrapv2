@@ -48,3 +48,8 @@ spec:
 ```
 
 Then commit and push - ArgoCD will detect and deploy it automatically!
+
+## Documentation
+
+- **[Quick Start Guide](../docs/QUICKSTART.md)** - Quick reference for adding applications
+- **[GitOps Workflow](../docs/GITOPS.md)** - Comprehensive GitOps documentation
