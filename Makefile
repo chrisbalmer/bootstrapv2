@@ -21,6 +21,7 @@ help:
 	@echo ""
 	@echo "ArgoCD targets:"
 	@echo "  bootstrap-argocd    - Install ArgoCD on the cluster"
+	@echo "  bootstrap-apps      - Deploy root app (App of Apps pattern)"
 	@echo "  argocd-password     - Get ArgoCD admin password"
 	@echo "  argocd-port-forward - Port forward to ArgoCD UI (localhost:8080)"
 	@echo "  remove-argocd       - Uninstall ArgoCD from the cluster"
@@ -149,6 +150,23 @@ bootstrap-argocd:
 	@echo "ArgoCD installed successfully!"
 	@echo "Get admin password with: make argocd-password"
 	@echo "Access UI with: make argocd-port-forward"
+	@echo ""
+	@echo "Next step: Run 'make bootstrap-apps' to deploy the root application"
+
+bootstrap-apps:
+	@echo "Deploying root application (App of Apps pattern)..."
+	kubectl apply -f apps/root-app.yaml
+	@echo ""
+	@echo "Waiting for root application to sync..."
+	@sleep 5
+	@kubectl get applications -n argocd
+	@echo ""
+	@echo "Root application deployed! ArgoCD will now:"
+	@echo "  - Watch the apps/ directory for new applications"
+	@echo "  - Automatically sync changes from git"
+	@echo "  - Deploy any new YAML files added to apps/"
+	@echo ""
+	@echo "View in UI: make argocd-port-forward"
 
 argocd-password:
 	@echo "ArgoCD admin password:"

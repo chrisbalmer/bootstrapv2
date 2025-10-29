@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app
+  namespace: argocd
+  # Finalizer ensures cascade deletion - when root-app is deleted, all its apps are too
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/chrisbalmer/bootstrapv2.git
+    targetRevision: main
+    path: apps
+    directory:
+      recurse: true
+      # Only include Application resources, not subdirectories with manifests
+      include: '*.yaml'
+      exclude: 'README.md'
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  
+  syncPolicy:
+    automated:
+      prune: true      # Remove resources that are no longer in git
+      selfHeal: true   # Automatically sync when cluster state differs from git
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

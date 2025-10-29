@@ -64,8 +64,18 @@ brew install yq
    ```bash
    make bootstrap-argocd
    ```
+
+6. **Deploy Root Application (GitOps)**:
+   ```bash
+   make bootstrap-apps
+   ```
    
-   See [bootstrap/argocd/README.md](bootstrap/argocd/README.md) for details.
+   This enables ArgoCD to:
+   - Monitor this repository for new applications
+   - Automatically sync changes from git
+   - Deploy any new apps added to the `apps/` directory
+   
+   See [apps/README.md](apps/README.md) and [bootstrap/argocd/README.md](bootstrap/argocd/README.md) for details.
 
 ## Configuration Parameters
 
@@ -98,6 +108,15 @@ make status NODE_IP=172.21.7.101
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
 ├── Makefile                  # Common operations
+├── apps/                     # ArgoCD applications (GitOps)
+│   ├── README.md            # App of Apps documentation
+│   ├── root-app.yaml        # Root application (watches this directory)
+│   └── argocd.yaml          # ArgoCD managing itself
+├── bootstrap/                # Bootstrap configurations
+│   └── argocd/              # ArgoCD installation
+│       ├── README.md        # ArgoCD setup guide
+│       ├── namespace.yaml   # ArgoCD namespace
+│       └── kustomization.yaml # Kustomize config
 ├── configs/                  # Generated Talos configs (gitignored)
 │   ├── controlplane.yaml    # Control plane configuration
 │   ├── talosconfig          # Talos client configuration
