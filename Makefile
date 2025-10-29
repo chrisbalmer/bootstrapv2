@@ -1,4 +1,4 @@
-.PHONY: help generate-config apply-config bootstrap kubeconfig status upgrade reset clean
+.PHONY: help generate-config apply-config bootstrap kubeconfig status upgrade reset clean bootstrap-argocd argocd-password argocd-port-forward remove-argocd
 
 TALOS_VERSION ?= v1.10.7
 INSTALLER_IMAGE ?= ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f
@@ -18,6 +18,12 @@ help:
 	@echo "  upgrade          - Upgrade Talos (specify VERSION=vX.Y.Z)"
 	@echo "  reset            - Reset the node (WARNING: destructive)"
 	@echo "  clean            - Remove generated configuration files"
+	@echo ""
+	@echo "ArgoCD targets:"
+	@echo "  bootstrap-argocd    - Install ArgoCD on the cluster"
+	@echo "  argocd-password     - Get ArgoCD admin password"
+	@echo "  argocd-port-forward - Port forward to ArgoCD UI (localhost:8080)"
+	@echo "  remove-argocd       - Uninstall ArgoCD from the cluster"
 
 pull-secrets:
 	@echo "Pulling secrets from 1Password..."
@@ -131,3 +137,34 @@ services:
 		--endpoints $(NODE_IP) \
 		--talosconfig configs/talosconfig \
 		services
+
+# ArgoCD targets
+bootstrap-argocd:
+	@echo "Installing ArgoCD..."
+	kubectl apply -k bootstrap/argocd/
+	@echo ""
+	@echo "Waiting for ArgoCD to be ready..."
+	@kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd || true
+	@echo ""
+	@echo "ArgoCD installed successfully!"
+	@echo "Get admin password with: make argocd-password"
+	@echo "Access UI with: make argocd-port-forward"
+
+argocd-password:
+	@echo "ArgoCD admin password:"
+	@kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "Secret not found - ArgoCD may not be installed yet"
+	@echo ""
+
+argocd-port-forward:
+	@echo "Port forwarding ArgoCD UI to http://localhost:8080"
+	@echo "Username: admin"
+	@echo "Password: Run 'make argocd-password' to get the password"
+	@echo ""
+	@echo "Press Ctrl+C to stop port forwarding"
+	kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+remove-argocd:
+	@echo "WARNING: This will remove ArgoCD and all its applications!"
+	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ]
+	kubectl delete -k bootstrap/argocd/
+	@echo "ArgoCD removed"

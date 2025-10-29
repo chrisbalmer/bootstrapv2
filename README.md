@@ -60,6 +60,13 @@ brew install yq
    make kubeconfig
    ```
 
+5. **(Optional) Install ArgoCD**:
+   ```bash
+   make bootstrap-argocd
+   ```
+   
+   See [bootstrap/argocd/README.md](bootstrap/argocd/README.md) for details.
+
 ## Configuration Parameters
 
 The Makefile supports the following configurable parameters:
