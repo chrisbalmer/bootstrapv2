@@ -97,14 +97,16 @@ upgrade:
 		--image $(INSTALLER_IMAGE)
 
 reset:
-	@echo "WARNING: This will completely wipe the node!"
+	@echo "WARNING: This will wipe EPHEMERAL and STATE partitions (preserves META/installer)!"
 	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ]
 	talosctl --nodes $(NODE_IP) \
 		--endpoints $(NODE_IP) \
 		--talosconfig configs/talosconfig \
 		reset \
+		--system-labels-to-wipe EPHEMERAL,STATE \
+		--reboot \
 		--graceful=false \
-		--reboot
+		--wait=false
 
 clean:
 	@echo "Removing generated configuration files..."

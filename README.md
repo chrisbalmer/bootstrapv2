@@ -131,8 +131,14 @@ This generates the Talos configuration files using the secrets stored in 1Passwo
 ### Apply Configuration
 
 ```bash
+# For a fresh node with DHCP-assigned IP, specify the current IP
+make apply-config NODE_IP=<dhcp-assigned-ip>
+
+# For a node already configured with static IP
 make apply-config
 ```
+
+**Note:** When first setting up a node, it will have a DHCP-assigned IP address. You must specify this IP when running `apply-config` the first time. After applying the configuration, the node will switch to the static IP (172.21.7.100) configured in patch.yaml.
 
 Applies the configuration to the node. Use this after making changes to the configuration.
 
@@ -172,7 +178,7 @@ Note: This uses a custom Talos installer image (`ghcr.io/chrisbalmer/installer`)
 make reset
 ```
 
-⚠️ **Warning**: This will completely wipe the node!
+⚠️ **Warning**: This will wipe the EPHEMERAL and STATE partitions, allowing you to start over. The META partition (containing the Talos installer) is preserved, so the node will reboot and be ready for reconfiguration without needing to reflash the disk.
 
 ## Troubleshooting
 
