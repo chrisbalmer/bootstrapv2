@@ -11,7 +11,7 @@ spec:
   
   source:
     repoURL: https://github.com/chrisbalmer/bootstrapv2.git
-    targetRevision: main
+    targetRevision: feature/argocd-bootstrap  # Temporary: change to 'main' after merge
     path: bootstrap/argocd
   
   destination:
