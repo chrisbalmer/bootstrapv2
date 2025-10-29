@@ -25,6 +25,10 @@ kubectl apply -k bootstrap/argocd/
 
 2. **Get the initial admin password**:
    ```bash
+   # Using Makefile
+   make argocd-password
+   
+   # Or manually
    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
    ```
 
@@ -75,19 +79,35 @@ The installation includes:
 
 - **Namespace**: `argocd`
 - **Mode**: Single replica (suitable for single-node cluster)
-- **Server**: Insecure mode enabled (no TLS internally)
-- **Version**: v2.13.2
+- **Version**: v2.13.2 (official manifest)
+- **Source**: Official ArgoCD installation manifest from GitHub
 
 ### Customization
 
 To customize the installation:
 
-1. Edit `bootstrap/argocd/install.yaml` for ArgoCD configuration
-2. Edit `bootstrap/argocd/kustomization.yaml` for resource patches
+1. Edit `bootstrap/argocd/kustomization.yaml` to add JSON patches or modify resources
+2. The current configuration uses JSON patches to reduce replicas to 1 for single-node operation
 3. Apply changes:
    ```bash
    kubectl apply -k bootstrap/argocd/
    ```
+
+#### Adding Additional Configuration
+
+You can add ConfigMap patches to the kustomization.yaml. For example:
+
+```yaml
+patches:
+  # Add server configuration
+  - patch: |-
+      - op: add
+        path: /data/server.insecure
+        value: "true"
+    target:
+      kind: ConfigMap
+      name: argocd-cmd-params-cm
+```
 
 ## Post-Installation
 
