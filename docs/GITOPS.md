@@ -308,24 +308,6 @@ kubectl delete application <app-name> -n argocd
 5. **Monitor health**: Check ArgoCD UI regularly
 6. **Document changes**: Add comments to Application resources
 
-## Migration to Main Branch
-
-Currently testing on `feature/argocd-bootstrap` branch. To migrate:
-
-1. Update `apps/root-app.yaml` and `apps/argocd.yaml`:
-   ```yaml
-   targetRevision: main  # Change from feature/argocd-bootstrap
-   ```
-
-2. Commit and merge to main:
-   ```bash
-   git checkout main
-   git merge feature/argocd-bootstrap
-   git push origin main
-   ```
-
-3. ArgoCD will automatically switch to tracking main branch
-
 ## Resources
 
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
