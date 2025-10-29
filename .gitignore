@@ -18,6 +18,9 @@ configs/secrets.yaml
 # Notes
 NOTES.md
 
+# Session summaries
+*-summary.md
+
 # Secrets
 secrets/
 *.key
