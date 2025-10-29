@@ -12,13 +12,11 @@ machine:
       - 1.1.1.3
       - 1.0.0.3
   install:
-    disk: /dev/mmcblk0
-    image: ghcr.io/siderolabs/installer:v1.8.0
+    disk: /dev/nvme0n1
+    image: ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f
     wipe: false
   kubelet:
     image: ghcr.io/siderolabs/kubelet:v1.31.1
-    extraArgs:
-      rotate-server-certificates: true
 
 cluster:
   allowSchedulingOnControlPlanes: true
@@ -26,13 +24,4 @@ cluster:
     cni:
       name: custom
       urls:
-        - https://github.com/antrea-io/antrea/releases/download/v2.4.3/antrea-crds.yml
-  proxy:
-    disabled: true
-  discovery:
-    enabled: true
-    registries:
-      kubernetes:
-        disabled: false
-      service:
-        disabled: false
+        - https://gist.githubusercontent.com/chrisbalmer/8fa4bf2f5df018c70d40c819537824ea/raw/64aef672ef09c6da6850a9fd277f56a15173c22a/antrea-talos-2.4.3.yml

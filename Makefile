@@ -1,7 +1,8 @@
 .PHONY: help generate-config apply-config bootstrap kubeconfig status upgrade reset clean
 
-TALOS_VERSION ?= v1.8.0
-NODE_IP := 172.21.7.100
+TALOS_VERSION ?= v1.10.7
+INSTALLER_IMAGE ?= ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f
+NODE_IP ?= 172.21.7.100
 CLUSTER_NAME := bootstrapv2
 CLUSTER_ENDPOINT := https://$(NODE_IP):6443
 
@@ -25,15 +26,20 @@ pull-secrets:
 	@echo "Secrets retrieved successfully"
 
 generate-config: pull-secrets
-	@echo "Generating Talos configuration..."
+	@echo "Generating Talos configuration for version $(TALOS_VERSION)..."
 	@mkdir -p configs
 	talosctl gen config $(CLUSTER_NAME) $(CLUSTER_ENDPOINT) \
 		--output configs/ \
 		--with-docs=false \
 		--with-examples=false \
 		--with-secrets configs/secrets.yaml \
-		--config-patch @scripts/patch.yaml
+		--config-patch @scripts/patch.yaml \
+		--talos-version $(TALOS_VERSION)
+	@echo "Configuring talosconfig with endpoint and node..."
+	@yq eval -i '.contexts.$(CLUSTER_NAME).endpoints = ["$(NODE_IP)"]' configs/talosconfig
+	@yq eval -i '.contexts.$(CLUSTER_NAME).nodes = ["$(NODE_IP)"]' configs/talosconfig
 	@echo "Configuration generated in configs/"
+	@echo "Talosconfig configured with endpoint and node: $(NODE_IP)"
 	@echo "Review and customize configs/controlplane.yaml if needed"
 
 apply-config:
@@ -83,12 +89,12 @@ health:
 		health
 
 upgrade:
-	@echo "Upgrading Talos to $(TALOS_VERSION)..."
+	@echo "Upgrading Talos to $(INSTALLER_IMAGE)..."
 	talosctl --nodes $(NODE_IP) \
 		--endpoints $(NODE_IP) \
 		--talosconfig configs/talosconfig \
 		upgrade \
-		--image ghcr.io/siderolabs/installer:$(TALOS_VERSION)
+		--image $(INSTALLER_IMAGE)
 
 reset:
 	@echo "WARNING: This will completely wipe the node!"

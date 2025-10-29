@@ -15,6 +15,9 @@ configs/secrets.yaml
 *.tmp
 .DS_Store
 
+# Notes
+NOTES.md
+
 # Secrets
 secrets/
 *.key

@@ -46,6 +46,26 @@ brew install siderolabs/tap/talosctl
    make kubeconfig
    ```
 
+## Configuration Parameters
+
+The Makefile supports the following configurable parameters:
+
+- **NODE_IP** - IP address of the Talos node (default: `172.21.7.100`)
+- **TALOS_VERSION** - Talos version to use (default: `v1.10.7-1-g31471348f`)
+
+You can override these when running make commands:
+
+```bash
+# Use a different node IP
+make apply-config NODE_IP=172.21.7.101
+
+# Use a different Talos version for upgrade
+make upgrade TALOS_VERSION=v1.11.0 NODE_IP=172.21.7.100
+
+# Override both parameters
+make status NODE_IP=172.21.7.101
+```
+
 ## Directory Structure
 
 ```
@@ -63,9 +83,14 @@ brew install siderolabs/tap/talosctl
 
 The node is configured with:
 - Hostname: `bootstrapv2`
-- IP Address: `172.21.7.100/24`
+- IP Address: `172.21.7.100/24` (configurable via `NODE_IP` parameter)
 - Single control plane node (no workers)
 - ARM64 architecture for Raspberry Pi 5
+- Custom Talos installer: `ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f`
+- Install disk: `/dev/nvme0n1`
+- Network interface: `end0`
+- DNS: Cloudflare family-friendly (1.1.1.3, 1.0.0.3)
+- CNI: Antrea v2.4.3
 
 ## Common Operations
 
@@ -136,8 +161,10 @@ make status
 ### Upgrade Talos
 
 ```bash
-make upgrade VERSION=v1.8.0
+make upgrade TALOS_VERSION=v1.10.7-1-g31471348f
 ```
+
+Note: This uses a custom Talos installer image (`ghcr.io/chrisbalmer/installer`) optimized for this setup.
 
 ### Reset Node
 
