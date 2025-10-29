@@ -7,10 +7,10 @@ resources:
   - namespace.yaml
   # Use the official ArgoCD installation manifest
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.13.2/manifests/install.yaml
-  - install.yaml
 
-# Patch to reduce resource requirements for single-node cluster
+# JSON patches to reduce resource requirements for single-node cluster
 patches:
+  # Reduce server replicas
   - patch: |-
       - op: replace
         path: /spec/replicas
@@ -18,6 +18,8 @@ patches:
     target:
       kind: Deployment
       name: argocd-server
+  
+  # Reduce repo-server replicas
   - patch: |-
       - op: replace
         path: /spec/replicas
@@ -25,6 +27,8 @@ patches:
     target:
       kind: Deployment
       name: argocd-repo-server
+  
+  # Reduce application-controller replicas
   - patch: |-
       - op: replace
         path: /spec/replicas
@@ -34,5 +38,6 @@ patches:
       name: argocd-application-controller
 
 # Add common labels
-commonLabels:
-  managed-by: bootstrap
+labels:
+  - pairs:
+      managed-by: bootstrap
