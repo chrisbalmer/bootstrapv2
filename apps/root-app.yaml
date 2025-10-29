@@ -14,8 +14,8 @@ spec:
     targetRevision: main
     path: apps
     directory:
-      recurse: true
-      # Only include Application resources, not subdirectories with manifests
+      recurse: false
+      # Only include Application resources in the apps directory
       include: '*.yaml'
       exclude: 'README.md'
   
