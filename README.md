@@ -17,11 +17,25 @@ This repository contains the configuration and tooling to manage a Talos Linux n
 
 - [talosctl](https://www.talos.dev/latest/introduction/getting-started/) - Talos CLI tool
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) - Kubernetes CLI tool
+- [1Password CLI](https://developer.1password.com/docs/cli/) - For secrets management
+- [yq](https://github.com/mikefarah/yq) - YAML processor for config automation
 
 ### Installing talosctl
 
 ```bash
 brew install siderolabs/tap/talosctl
+```
+
+### Installing 1Password CLI
+
+```bash
+brew install 1password-cli
+```
+
+### Installing yq
+
+```bash
+brew install yq
 ```
 
 ## Quick Start
@@ -51,7 +65,8 @@ brew install siderolabs/tap/talosctl
 The Makefile supports the following configurable parameters:
 
 - **NODE_IP** - IP address of the Talos node (default: `172.21.7.100`)
-- **TALOS_VERSION** - Talos version to use (default: `v1.10.7-1-g31471348f`)
+- **TALOS_VERSION** - Talos version for config generation (default: `v1.10.7`)
+- **INSTALLER_IMAGE** - Custom Talos installer image (default: `ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f`)
 
 You can override these when running make commands:
 
@@ -59,10 +74,13 @@ You can override these when running make commands:
 # Use a different node IP
 make apply-config NODE_IP=172.21.7.101
 
-# Use a different Talos version for upgrade
-make upgrade TALOS_VERSION=v1.11.0 NODE_IP=172.21.7.100
+# Use a different Talos version for config generation
+make generate-config TALOS_VERSION=v1.11.0
 
-# Override both parameters
+# Use a different installer image for upgrade
+make upgrade INSTALLER_IMAGE=ghcr.io/chrisbalmer/installer:v1.11.0
+
+# Override multiple parameters
 make status NODE_IP=172.21.7.101
 ```
 
@@ -71,12 +89,17 @@ make status NODE_IP=172.21.7.101
 ```
 .
 ├── README.md                 # This file
+├── LICENSE                   # MIT License
 ├── Makefile                  # Common operations
-├── configs/                  # Generated Talos configs
+├── configs/                  # Generated Talos configs (gitignored)
 │   ├── controlplane.yaml    # Control plane configuration
-│   └── talosconfig          # Talos client configuration
+│   ├── talosconfig          # Talos client configuration
+│   └── secrets.yaml         # Talos secrets (from 1Password)
 └── scripts/                  # Helper scripts
-    └── patch.yaml           # Configuration patches
+    ├── patch.yaml           # Configuration patches
+    ├── install-talos.md     # Installation guide
+    ├── upgrade-talos.sh     # Upgrade helper script
+    └── backup-config.sh     # Backup helper script
 ```
 
 ## Configuration
@@ -99,8 +122,8 @@ The node is configured with:
 ⚠️ **Warning**: Only do this once when setting up a new cluster! Regenerating secrets will make your existing cluster inaccessible.
 
 ```bash
-# Generate new secrets for Talos version 1.11.3
-talosctl gen secrets --output-file configs/secrets.yaml --talos-version v1.11.3
+# Generate new secrets for Talos version 1.10.7
+talosctl gen secrets --output-file configs/secrets.yaml --talos-version v1.10.7
 
 # Store in 1Password
 op document create configs/secrets.yaml --title "bootstrapv2-talos-secrets" --vault "homelab"
@@ -167,10 +190,10 @@ make status
 ### Upgrade Talos
 
 ```bash
-make upgrade TALOS_VERSION=v1.10.7-1-g31471348f
+make upgrade INSTALLER_IMAGE=ghcr.io/chrisbalmer/installer:v1.10.7-1-g31471348f
 ```
 
-Note: This uses a custom Talos installer image (`ghcr.io/chrisbalmer/installer`) optimized for this setup.
+Note: This uses a custom Talos installer image (`ghcr.io/chrisbalmer/installer`) optimized for this setup. Use the `INSTALLER_IMAGE` parameter to specify the upgrade image.
 
 ### Reset Node
 
@@ -211,7 +234,7 @@ talosctl --nodes 172.21.7.100 dashboard
 The node uses static IP configuration:
 - IP: 172.21.7.100/24
 - Gateway: 172.21.7.1 (adjust in patch.yaml if different)
-- DNS: 1.1.1.1, 8.8.8.8
+- DNS: 1.1.1.3, 1.0.0.3 (Cloudflare family-friendly)
 
 ## Notes
 
